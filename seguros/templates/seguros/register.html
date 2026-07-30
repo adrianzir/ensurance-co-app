@@ -1,0 +1,61 @@
+{% extends 'seguros/base.html' %}
+
+{% block title %}Crear Cuenta de Cliente - Frontal Seguros{% endblock %}
+
+{% block content %}
+<div class="container form-layout">
+    <div class="form-card" style="max-width: 540px;">
+        <div class="form-header">
+            <h2 class="form-title">Crea tu cuenta de cliente</h2>
+            <p class="form-subtitle">Regístrate para contratar y gestionar tus pólizas de seguros de forma digital</p>
+        </div>
+
+        <form method="POST" class="django-form">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="form-errors">
+                    <ul>
+                        {% for error in form.non_field_errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.help_text %}
+                        <span style="font-size: 11px; color: var(--text-muted); margin-top: 4px; line-height: 1.3;">{{ field.help_text }}</span>
+                    {% endif %}
+                    {% if field.errors %}
+                        <span style="color: var(--danger); font-size: 12px; margin-top: 4px;">{{ field.errors.0 }}</span>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px; padding: 12px;">
+                <i data-lucide="user-plus"></i>
+                <span>Crear Cuenta</span>
+            </button>
+        </form>
+
+        <div class="form-footer">
+            <span>¿Ya tienes una cuenta? </span>
+            <a href="{% url 'login' %}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}">Inicia sesión aquí</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Inyectar clases para que los inputs tomen el estilo premium de CSS
+    document.querySelectorAll('.django-form input').forEach(input => {
+        input.classList.add('form-input');
+        if (input.type === 'text' || input.type === 'password' || input.type === 'email') {
+            input.setAttribute('placeholder', ' ');
+        }
+    });
+</script>
+{% endblock %}

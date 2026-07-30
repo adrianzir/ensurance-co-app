@@ -1,0 +1,82 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Frontal Seguros{% endblock %}</title>
+    <meta name="description" content="Encuentra y contrata los mejores seguros de auto, hogar, vida, salud y tecnología de forma 100% digital y transparente.">
+    <!-- CSS Estilos -->
+    <link rel="stylesheet" href="{% static 'seguros/css/style.css' %}">
+</head>
+<body>
+    <div class="ambient-glow"></div>
+    <div class="ambient-glow-2"></div>
+
+    <div class="main-wrapper">
+        <!-- Barra de Navegación -->
+        <header>
+            <div class="container navbar">
+                <a href="{% url 'home' %}" >
+                    <i data-lucide="shield-check"></i>
+                    <span>Frontal Seguros</span>
+                </a>
+                
+                <ul class="nav-links">
+                    <li><a href="{% url 'home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">Catálogo</a></li>
+                    {% if user.is_authenticated %}
+                        <li><a href="{% url 'dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">Mi Panel</a></li>
+                    {% endif %}
+                </ul>
+
+                <div class="nav-auth">
+                    {% if user.is_authenticated %}
+                        <span style="font-size: 14px; color: var(--text-secondary);">
+                            Hola, <strong style="color: var(--text-primary);">{{ user.first_name|default:user.username }}</strong>
+                        </span>
+                        <a href="{% url 'logout' %}" class="btn btn-secondary btn-sm">Cerrar Sesión</a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="nav-link">Iniciar Sesión</a>
+                        <a href="{% url 'registro' %}" class="btn btn-primary btn-sm">Registrarse</a>
+                    {% endif %}
+                </div>
+            </div>
+        </header>
+
+        <!-- Mensajes Toast Django -->
+        {% if messages %}
+            <div class="messages-container">
+                {% for message in messages %}
+                    <div class="message-toast {{ message.tags }}">
+                        <span>{{ message }}</span>
+                        <button class="message-close-btn">&times;</button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Contenido Principal -->
+        <main style="flex: 1;">
+            {% block content %}{% endblock %}
+        </main>
+
+        <!-- Pie de Página -->
+        <footer>
+            <div class="container footer-content">
+                <div class="footer-brand">
+                    <span>&copy; 2026 Frontal Seguros Inc. Todos los derechos reservados.</span>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Lucide Icons CDN para iconos vectoriales limpios -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        // Inicializar iconos
+        lucide.createIcons();
+    </script>
+    <!-- JS Principal -->
+    <script src="{% static 'seguros/js/main.js' %}"></script>
+</body>
+</html>

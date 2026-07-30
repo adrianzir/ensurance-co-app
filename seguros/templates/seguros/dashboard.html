@@ -1,0 +1,60 @@
+{% extends 'seguros/base.html' %}
+
+{% block title %}Mi Panel - Frontal Seguros{% endblock %}
+
+{% block content %}
+<div class="container dashboard-layout">
+    <!-- Encabezado del Panel -->
+    <div class="dashboard-header">
+        <div class="dashboard-title">
+            <h1>Mi Panel de Cobertura</h1>
+            <p>Hola, <strong>{{ user.first_name }}</strong>. Aquí puedes ver y gestionar tus seguros contratados.</p>
+        </div>
+        <div>
+            <a href="{% url 'home' %}" class="btn btn-primary btn-sm">
+                <i data-lucide="plus"></i>
+                <span>Contratar Nuevo Seguro</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Lista de Contratos -->
+    <div class="contracts-grid">
+        {% for contrato in contratos %}
+            <div class="contract-card">
+                <!-- Badge de Estado -->
+                <span class="contract-status-badge {{ contrato.estado|lower }}">
+                    {{ contrato.get_estado_display }}
+                </span>
+
+                <div class="card-icon" style="width: 48px; height: 48px; margin-bottom: 16px;">
+                    <i data-lucide="{{ contrato.seguro.icon_class|default:'shield' }}"></i>
+                </div>
+
+                <h3 class="contract-title">{{ contrato.seguro.titulo }}</h3>
+                
+                <div class="contract-meta-row" style="margin-top: 12px;">
+                    <span>Fecha Contrato:</span>
+                    <strong style="color: var(--text-primary);">{{ contrato.fecha_contratacion|date:"d/m/Y" }}</strong>
+                </div>
+                <div class="contract-meta-row">
+                    <span>Inicio Cobertura:</span>
+                    <strong style="color: var(--text-primary);">{{ contrato.fecha_inicio|date:"d/m/Y" }}</strong>
+                </div>
+
+                <div class="contract-price">
+                    <span>Costo Mensual</span>
+                    <span>${{ contrato.precio_pactado }}</span>
+                </div>
+            </div>
+        {% empty %}
+            <div class="no-contracts-card">
+                <i data-lucide="shield-alert"></i>
+                <h3>No tienes seguros contratados</h3>
+                <p>Todavía no has contratado ninguna póliza de seguro. Explora nuestro catálogo y protege lo que más quieres hoy mismo.</p>
+                <a href="{% url 'home' %}" class="btn btn-primary">Ver Catálogo de Seguros</a>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,156 @@
+{% extends 'seguros/base.html' %}
+
+{% block title %}Contratar Seguro: {{ seguro.titulo }} - Frontal Seguros{% endblock %}
+
+{% block content %}
+<div class="container form-layout" style="padding: 40px 0;">
+    <div class="form-card" style="max-width: 600px;">
+        <div class="form-header">
+            <span class="hero-tag" style="margin-bottom: 12px; font-size: 11px;">Paso Final</span>
+            <h2 class="form-title">Confirmar Contratación</h2>
+            <p class="form-subtitle">Estás contratando el seguro <strong>{{ seguro.titulo }}</strong></p>
+        </div>
+
+        <form method="POST" class="django-form">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="form-errors">
+                    <ul>
+                        {% for error in form.non_field_errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            <!-- Sección de Fecha de Cobertura -->
+            <div style="margin-bottom: 28px; border-bottom: 1px solid var(--border); padding-bottom: 20px;">
+                <h3 style="font-size: 16px; margin-bottom: 16px; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
+                    <i data-lucide="calendar" style="color: var(--primary); width: 20px; height: 20px;"></i>
+                    <span>1. Inicio de Cobertura</span>
+                </h3>
+                <div class="form-group">
+                    <label for="{{ form.fecha_inicio.id_for_label }}">{{ form.fecha_inicio.label }}</label>
+                    {{ form.fecha_inicio }}
+                    {% if form.fecha_inicio.errors %}
+                        <span style="color: var(--danger); font-size: 12px; margin-top: 4px;">{{ form.fecha_inicio.errors.0 }}</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Sección de Simulación de Pago -->
+            <div style="margin-bottom: 28px;">
+                <h3 style="font-size: 16px; margin-bottom: 16px; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
+                    <i data-lucide="credit-card" style="color: var(--secondary); width: 20px; height: 20px;"></i>
+                    <span>2. Método de Pago (Simulado)</span>
+                </h3>
+                
+                <!-- Tarjeta de Crédito Visual -->
+                <div class="credit-card-mockup" style="background: linear-gradient(135deg, #1e1b4b 0%, #311042 100%); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-md); padding: 20px; margin-bottom: 20px; box-shadow: var(--shadow-md); color: white; position: relative; overflow: hidden; height: 160px; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <span style="font-family: var(--font-heading); font-size: 14px; font-weight: 700; opacity: 0.8;">PREMIUM CLIENTE</span>
+                        <i data-lucide="wifi" style="transform: rotate(90deg); opacity: 0.8; width: 20px; height: 20px;"></i>
+                    </div>
+                    
+                    <div style="font-family: monospace; font-size: 20px; letter-spacing: 0.15em; word-spacing: 0.1em; margin: 15px 0;">
+                        ••••  ••••  ••••  ••••
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                        <div>
+                            <div style="font-size: 8px; opacity: 0.5; text-transform: uppercase;">Titular</div>
+                            <div id="card-holder-display" style="font-size: 13px; font-weight: 500;">{{ user.get_full_name|upper|default:"CLIENTE ASEGURADO" }}</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 8px; opacity: 0.5; text-transform: uppercase;">Vence</div>
+                            <div style="font-size: 13px; font-weight: 500;">12/30</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Campos de tarjeta -->
+                <div class="form-group">
+                    <label for="card_name">Nombre en la Tarjeta</label>
+                    <input type="text" id="card_name" value="{{ user.get_full_name|default:user.username }}" required class="form-input">
+                </div>
+
+                <div class="form-group">
+                    <label for="card_number">Número de Tarjeta</label>
+                    <input type="text" id="card_number" placeholder="4532 5812 3422 9011" max-length="19" required class="form-input">
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div class="form-group">
+                        <label for="card_expiry">Vencimiento</label>
+                        <input type="text" id="card_expiry" placeholder="MM/AA" max-length="5" required class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="card_cvv">CVV</label>
+                        <input type="password" id="card_cvv" placeholder="•••" max-length="3" required class="form-input">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resumen de Costos y Botón -->
+            <div style="background-color: rgba(255, 255, 255, 0.02); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px; margin-bottom: 24px;">
+                <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 8px;">
+                    <span style="color: var(--text-secondary);">Monto Mensual:</span>
+                    <span style="color: var(--text-primary); font-weight: 600;">${{ seguro.precio_mensual }}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 14px; font-weight: 700; border-top: 1px solid var(--border); padding-top: 8px;">
+                    <span style="color: var(--text-primary);">Total a Cobrar Hoy:</span>
+                    <span style="color: var(--secondary); font-size: 16px;">${{ seguro.precio_mensual }}</span>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 14px;">
+                <i data-lucide="check-square"></i>
+                <span>Confirmar Pago y Contratar</span>
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Dinámicamente actualizar el nombre en la tarjeta simulada
+    const cardNameInput = document.getElementById('card_name');
+    const cardHolderDisplay = document.getElementById('card-holder-display');
+    if (cardNameInput && cardHolderDisplay) {
+        cardNameInput.addEventListener('input', (e) => {
+            cardHolderDisplay.textContent = e.target.value.toUpperCase() || 'CLIENTE ASEGURADO';
+        });
+    }
+
+    // Autoformato de número de tarjeta y vencimiento
+    const cardNumberInput = document.getElementById('card_number');
+    if (cardNumberInput) {
+        cardNumberInput.addEventListener('input', (e) => {
+            let v = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+            let matches = v.match(/\d{4,16}/g);
+            let match = matches && matches[0] || '';
+            let parts = [];
+            for (let i = 0, len = match.length; i < len; i += 4) {
+                parts.push(match.substring(i, i + 4));
+            }
+            if (parts.length > 0) {
+                e.target.value = parts.join(' ');
+            } else {
+                e.target.value = v;
+            }
+        });
+    }
+
+    const cardExpiryInput = document.getElementById('card_expiry');
+    if (cardExpiryInput) {
+        cardExpiryInput.addEventListener('input', (e) => {
+            let v = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+            if (v.length >= 2) {
+                e.target.value = v.substring(0, 2) + '/' + v.substring(2, 4);
+            } else {
+                e.target.value = v;
+            }
+        });
+    }
+</script>
+{% endblock %}

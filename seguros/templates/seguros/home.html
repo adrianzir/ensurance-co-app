@@ -1,0 +1,76 @@
+{% extends 'seguros/base.html' %}
+
+{% block title %}Catálogo de Seguros - Frontal Seguros{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Hero Section -->
+    <section class="hero">
+        <span class="hero-tag">Seguros Inteligentes</span>
+        <h1 class="hero-title">Protección a la medida de tu vida</h1>
+        <p class="hero-desc">Explora nuestros seguros diseñados para brindarte la mayor tranquilidad. Contrata online en menos de 5 minutos y gestiona todo desde tu panel.</p>
+    </section>
+
+    <!-- Búsqueda y Filtros -->
+    <section class="search-filter-section">
+        <form method="GET" action="{% url 'home' %}" class="search-bar-wrapper">
+            <input type="text" name="q" value="{{ query }}" placeholder="Buscar seguros por nombre o palabras clave..." class="search-input">
+            {% if categoria_seleccionada %}
+                <input type="hidden" name="categoria" value="{{ categoria_seleccionada }}">
+            {% endif %}
+            <button type="submit" class="btn btn-primary btn-sm" style="padding: 10px 24px;">
+                <i data-lucide="search" style="width: 16px; height: 16px;"></i>
+                <span>Buscar</span>
+            </button>
+        </form>
+
+        <div class="categories-pills">
+            <a href="{% url 'home' %}{% if query %}?q={{ query }}{% endif %}" class="category-pill {% if not categoria_seleccionada %}active{% endif %}">
+                Todos los Seguros
+            </a>
+            {% for cat_code, cat_name in categorias %}
+                <a href="{% url 'home' %}?categoria={{ cat_code }}{% if query %}&q={{ query }}{% endif %}" class="category-pill {% if categoria_seleccionada == cat_code %}active{% endif %}">
+                    {{ cat_name }}
+                </a>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Cuadrícula de Seguros -->
+    <section class="insurances-grid">
+        {% for seguro in seguros %}
+            <div class="insurance-card">
+                {% if seguro.destacado %}
+                    <span class="card-badge">Popular</span>
+                {% endif %}
+                
+                <div class="card-icon">
+                    <!-- Icono dinámico según icon_class -->
+                    <i data-lucide="{{ seguro.icon_class|default:'shield' }}"></i>
+                </div>
+                
+                <h3 class="card-title">{{ seguro.titulo }}</h3>
+                <p class="card-desc">{{ seguro.descripcion_corta }}</p>
+                
+                <div class="card-meta">
+                    <div class="card-price">
+                        <span class="price-label">Desde</span>
+                        <span class="price-value">${{ seguro.precio_mensual }}/mes</span>
+                    </div>
+                    <a href="{% url 'detalle' seguro.id %}" class="btn btn-secondary btn-sm" style="gap: 4px;">
+                        <span>Ver más</span>
+                        <i data-lucide="arrow-right" style="width: 14px; height: 14px;"></i>
+                    </a>
+                </div>
+            </div>
+        {% empty %}
+            <div class="no-contracts-card">
+                <i data-lucide="shield-alert"></i>
+                <h3>No se encontraron seguros</h3>
+                <p>No hay resultados que coincidan con tu búsqueda. Intenta con otros términos o categorías.</p>
+                <a href="{% url 'home' %}" class="btn btn-primary">Ver todos los seguros</a>
+            </div>
+        {% endfor %}
+    </section>
+</div>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends 'seguros/base.html' %}
+
+{% block title %}Iniciar Sesión - Frontal Seguros{% endblock %}
+
+{% block content %}
+<div class="container form-layout">
+    <div class="form-card">
+        <div class="form-header">
+            <h2 class="form-title">Bienvenido de nuevo</h2>
+            <p class="form-subtitle">Ingresa a tu cuenta para continuar con la contratación de tu seguro</p>
+        </div>
+
+        <form method="POST" class="django-form">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="form-errors">
+                    <ul>
+                        {% for error in form.non_field_errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    <!-- Django renderiza el input pero podemos pasarle atributos o dejar que se use el CSS general que apunta a input -->
+                    {{ field }}
+                    {% if field.errors %}
+                        <span style="color: var(--danger); font-size: 12px; margin-top: 4px;">{{ field.errors.0 }}</span>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px; padding: 12px;">
+                <i data-lucide="log-in"></i>
+                <span>Iniciar Sesión</span>
+            </button>
+        </form>
+
+        <div class="form-footer">
+            <span>¿Aún no tienes cuenta? </span>
+            <a href="{% url 'registro' %}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}">Regístrate aquí</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Inyectar clases para que los inputs tomen el estilo premium de CSS
+    document.querySelectorAll('.django-form input').forEach(input => {
+        input.classList.add('form-input');
+        if (input.type === 'text' || input.type === 'password' || input.type === 'email') {
+            input.setAttribute('placeholder', ' ');
+        }
+    });
+</script>
+{% endblock %}
