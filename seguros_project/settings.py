@@ -23,9 +23,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-uxgyp=z$vu%q-(gdmlmi8588q(c#ky3zpm82zbg759-47zm!5z'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['ensurance-co-app.onrender.com',
+    'localhost',
+    '127.0.0.1',]
 
 
 # Application definition
